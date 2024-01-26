@@ -1,5 +1,6 @@
 
 from pathlib import Path
+from threading import Thread
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -72,7 +73,8 @@ def update_last_lap_timer():
 
 def format_time(seconds):
     minutes, seconds = divmod(int(seconds), 60)
-    return f"{minutes:02}:{seconds:02}"
+    milliseconds = int((seconds - int(seconds)) * 1000)
+    return f"{minutes:02}:{int(seconds):02}:{milliseconds:02}"
 
 
 
@@ -385,6 +387,7 @@ vbatt_label = canvas.create_text(
     font=("Lato Regular", 15 * -1)
 )
 
+
 mode_label = canvas.create_text(
     610.0,
     131.0,
@@ -421,8 +424,27 @@ vbatt_text = canvas.create_text(
     font=("Lato Bold", 40 * -1)
 )
 
+def changeMode():
+    if(canvas.itemcget(mode_text, "text") == "RACE"):
+        canvas.itemconfig(mode_text, text="SLOW")
+    elif(canvas.itemcget(mode_text, "text") == "SLOW"):
+        canvas.itemconfig(mode_text, text="RACE")
+
+mode_button = Button(
+    window,
+    text="Mode",
+    font=("Lato Regular", 15),
+    bg="#4CAF50",
+    fg="black",
+    command=changeMode
+)
+
+# Position the button
+mode_button.place(x=370, y=320)
+    
+
 mode_text = canvas.create_text(
-    645.0,
+    620.0,
     144.0,
     anchor="nw",
     text="RACE",
@@ -434,7 +456,7 @@ current_lap_text = canvas.create_text(
     621.0,
     212.0,
     anchor="nw",
-    text="1:03:436",
+    text="00:00:00",
     fill="#FFFFFF",
     font=("Lato Bold", 40 * -1)
 )
@@ -443,7 +465,7 @@ last_lap_text = canvas.create_text(
     621.0,
     278.0,
     anchor="nw",
-    text="1:51:829",
+    text="00:00:00",
     fill="#FFFFFF",
     font=("Lato Bold", 40 * -1)
 )
@@ -463,6 +485,73 @@ canvas.create_rectangle(
     482.0,
     fill="#1A1A1A",
     outline="")
+
+# Define temperature variables
+battery_temp = 67.3
+motor_temp = 85.8
+inverter_temp = 79.9
+water_temp = 31.6
+
+# Function to simulate temperature increase
+def increase_temps():
+    global battery_temp, motor_temp, inverter_temp, water_temp
+    while running:
+        # Increase temperatures
+        battery_temp += 0.1
+        motor_temp += 0.2
+        inverter_temp += 0.15
+        water_temp += 0.05
+        # Update temperature text on canvas
+        update_temp_text()
+        # Sleep for a short duration to control the rate of increase
+        time.sleep(0.1)
+
+# Function to simulate temperature decrease
+def decrease_temps():
+    global battery_temp, motor_temp, inverter_temp, water_temp
+    while not running:
+        # Decrease temperatures
+        battery_temp -= 0.1
+        motor_temp -= 0.2
+        inverter_temp -= 0.15
+        water_temp -= 0.05
+        # Update temperature text on canvas
+        update_temp_text()
+        # Sleep for a short duration to control the rate of decrease
+        time.sleep(0.1)
+
+# Function to update temperature text on canvas
+def update_temp_text():
+    # Format temperatures and update text on canvas
+    canvas.itemconfig(battery_temp_text, text=f"{battery_temp:.1f}°C")
+    canvas.itemconfig(motor_temp_text, text=f"{motor_temp:.1f}°C")
+    canvas.itemconfig(inverter_temp_text, text=f"{inverter_temp:.1f}°C")
+    canvas.itemconfig(water_temp_text, text=f"{water_temp:.1f}°C")
+
+# Function to start temperature simulation
+def start_temp_simulation():
+    # Create threads for temperature increase and decrease
+    increase_thread = Thread(target=increase_temps)
+    decrease_thread = Thread(target=decrease_temps)
+    # Start the threads
+    increase_thread.start()
+    decrease_thread.start()
+
+# Add a button to start temperature simulation
+start_temp_button = Button(
+    window,
+    text="Start Temperature Simulation",
+    font=("Lato Regular", 15),
+    bg="#4CAF50",
+    fg="black",
+    command=start_temp_simulation
+)
+
+# Position the button
+start_temp_button.place(x=370, y=350)
+
+
+
 window.resizable(False, False)
 update_timers()
 window.mainloop()
