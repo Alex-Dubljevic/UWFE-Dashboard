@@ -55,8 +55,6 @@ class DashboardApp:
             fill="#FF0000",
             outline="")
 
-        # Add other canvas items here...
-
         self.battery_charge_slider = Scale(
             master,
             from_=0,
@@ -107,18 +105,18 @@ class DashboardApp:
 
         master.resizable(False, False)
 
-    def calculate_charge_color(self, charge):
+    def calculate_charge_colour(self, charge):
         r = int(255 * (1 - charge / 100))
         g = 0
         b = int(255 * (charge / 100))
-        color = "#{:02X}{:02X}{:02X}".format(r, g, b)
-        return color
+        colour = "#{:02X}{:02X}{:02X}".format(r, g, b)
+        return colour
 
     def update_battery_charge(self, value):
         value = int(value)
         self.canvas.itemconfig(self.soc_text, text=f"{value}%")
-        charge_color = self.calculate_charge_color(value)
-        self.canvas.itemconfig(self.charge_bar, fill=charge_color)
+        charge_colour = self.calculate_charge_colour(value)
+        self.canvas.itemconfig(self.charge_bar, fill=charge_colour)
         self.canvas.coords(self.charge_bar, 1.0, 2.0, 1.0 + (value / 100) * 800, 58.0)
 
     def change_mode(self):
