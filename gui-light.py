@@ -432,6 +432,13 @@ debug_button = Button(
     command=openDebug
 )
 
+from PIL import Image, ImageTk
+
+img = Image.open('jet2.jpg')
+photo_img = ImageTk.PhotoImage(img)
+canvas.image = photo_img 
+image = canvas.create_image(400, 200, image=canvas.image)
+
 debug_button.place(x=700, y=430)
 
 def start_animation():
@@ -440,9 +447,11 @@ def start_animation():
         update_battery_charge(i)
         time.sleep(0.02)
         i += 1
+    canvas.delete(image)
+    startup_thread.exit()
 
-thread = Thread(target=start_animation)
-thread.start()
+startup_thread = Thread(target=start_animation)
+startup_thread.start()
 
 window.resizable(False, False)
 window.mainloop()
