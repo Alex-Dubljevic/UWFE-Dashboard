@@ -86,7 +86,7 @@ battery_charge_slider = Scale(
     showvalue=0,
     command=update_battery_charge
 )
-battery_charge_slider.place(x=370, y=300)  # Adjust the position as needed
+battery_charge_slider.place(x=370, y=350)  # Adjust the position as needed
 
 # Initial configuration of the battery charge
 update_battery_charge(battery_charge_slider.get())
@@ -346,7 +346,7 @@ mode_button = Button(
 )
 
 # Position the button
-mode_button.place(x=370, y=320)
+mode_button.place(x=370, y=370)
 
 
 mode_text = canvas.create_text(
@@ -434,7 +434,7 @@ debug_button = Button(
 
 from PIL import Image, ImageTk
 
-img = Image.open('jet2.jpg')
+img = Image.open('dashboard.png')
 photo_img = ImageTk.PhotoImage(img)
 canvas.image = photo_img 
 image = canvas.create_image(400, 200, image=canvas.image)
@@ -445,10 +445,10 @@ def start_animation():
     i = 0
     while i < 101:
         update_battery_charge(i)
-        time.sleep(0.02)
+        time.sleep(0.03)
         i += 1
+    time.sleep(1)
     canvas.delete(image)
-    startup_thread.exit()
 
 startup_thread = Thread(target=start_animation)
 startup_thread.start()
