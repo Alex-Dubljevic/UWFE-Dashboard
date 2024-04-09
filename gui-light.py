@@ -1,9 +1,7 @@
-
 from threading import Thread
 
-# from tkinter import *
-# Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Scale
+
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Scale, scrolledtext
 import time
 
 window = Tk()
@@ -22,7 +20,6 @@ canvas = Canvas(
     highlightthickness = 0,
     relief = "ridge"
 )
-
 
 canvas.place(x = 0, y = 0)
 
@@ -286,20 +283,20 @@ mode_label = canvas.create_text(
     font=("Lato Regular", 15 * -1)
 )
 
-lap_label = canvas.create_text(
+lv_battery_label = canvas.create_text(
     610.0,
     197.0,
     anchor="nw",
-    text="Current Lap:",
+    text="LV Battery Voltage:",
     fill="#FFFFFF",
     font=("Lato Regular", 15 * -1)
 )
 
-lap_label2 = canvas.create_text(
+min_cell_label = canvas.create_text(
     610.0,
     265.0,
     anchor="nw",
-    text="Last Lap",
+    text="Min Cell Voltage:",
     fill="#FFFFFF",
     font=("Lato Regular", 15 * -1)
 )
@@ -313,6 +310,26 @@ vbatt_text = canvas.create_text(
     font=("Lato Bold", 40 * -1)
 )
 
+ # Create the scrollable text area
+dtc_text_area = scrolledtext.ScrolledText(window, width=55, height=2)
+dtc_text_area.place(x=10, y=425)
+dtc_text_area.config(font=("Helvetica", 20))
+dtc_text_area.config(background='darkgray')
+dtc_text_area.config(foreground='red')
+
+    # Function to update the text area with new error codes
+def publish_dtc(error_code, error_message):
+    dtc_text_area.insert("end","\n" + error_code + " | " + error_message)
+    dtc_text_area.yview("end")  # Scroll to the bottom to show the latest message
+
+def simulate_dtc_stream():
+        error_count = 0
+        while error_count < 3:
+            error_code = f"Error # {error_count}"
+            publish_dtc("Watchdog task detected that a task missed its checkin time, a watchdog reset is about to happen for the board", error_code)
+            error_count += 1
+            time.sleep(0.2)  # Simulate error codes coming in every 2 seconds
+
 def changeMode():
     if(canvas.itemcget(mode_text, "text") == "RACE"):
         canvas.itemconfig(mode_text, text="SLOW")
@@ -325,12 +342,12 @@ mode_button = Button(
     font=("Lato Regular", 15),
     bg="#4CAF50",
     fg="black",
-    command=changeMode
+    command=simulate_dtc_stream
 )
 
 # Position the button
 mode_button.place(x=370, y=320)
-    
+
 
 mode_text = canvas.create_text(
     620.0,
@@ -341,23 +358,91 @@ mode_text = canvas.create_text(
     font=("Lato Bold", 40 * -1)
 )
 
-current_lap_text = canvas.create_text(
+lv_batt_text = canvas.create_text(
     621.0,
     212.0,
     anchor="nw",
-    text="00:00:00",
+    text="3.3V",
     fill="#FFFFFF",
     font=("Lato Bold", 40 * -1)
 )
 
-last_lap_text = canvas.create_text(
+min_cell_text = canvas.create_text(
     621.0,
     278.0,
     anchor="nw",
-    text="00:00:00",
+    text="299V",
     fill="#FFFFFF",
     font=("Lato Bold", 40 * -1)
 )
+
+
+
+def openDebug():
+    window2 = Tk()
+    window2.geometry("800x480")
+    window2.configure(bg = "#262626")
+    window2.title("UWFE Dashboard Debug")
+
+    # Reset dashboard button
+    reset_button = Button(window2, text="Reset Dashboard")
+    reset_button.place(x=10, y=10)
+
+    
+
+    # Close Debug Menu button
+    close_button = Button(window2, text="Close Debug Menu",command=window2.withdraw)
+    close_button.place(x=220, y=10)
+
+    # Create the scrollable text area
+    debug_text_area = scrolledtext.ScrolledText(window2, width=100, height=30)
+    debug_text_area.place(x=10, y=50)
+
+    # Function to update the text area with new error codes
+    def update_debug_text(error_code):
+        debug_text_area.insert("end", error_code + "                                                " + time.strftime("%H:%M:%S") + "\n")
+        debug_text_area.yview("end")  # Scroll to the bottom to show the latest message  
+
+    # Function to simulate the stream of diagnostic codes (in a separate thread)
+    def simulate_error_stream():
+        error_count = 0
+        while True:
+            error_code = f"Error Code {error_count}"
+            update_debug_text(error_code)
+            error_count += 1
+            time.sleep(0.1)  # Simulate error codes coming in every 2 seconds
+
+    # Start the error code simulation thread
+    error_thread = Thread(target=simulate_error_stream)
+    error_thread.start()
+
+    # pause debug stream button
+    pause_button = Button(window2, text="Pause DTC Messages")
+    pause_button.place(x=420, y=10)
+
+    window2.resizable(False, False)
+    window2.mainloop()
+
+debug_button = Button(
+    window,
+    text="Debug",
+    font=("Lato Regular", 15),
+    bg="#4CAF50",
+    fg="black",
+    command=openDebug
+)
+
+debug_button.place(x=700, y=430)
+
+def start_animation():
+    i = 0
+    while i < 101:
+        update_battery_charge(i)
+        time.sleep(0.02)
+        i += 1
+
+thread = Thread(target=start_animation)
+thread.start()
 
 window.resizable(False, False)
 window.mainloop()

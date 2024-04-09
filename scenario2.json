@@ -1,0 +1,30 @@
+{
+    "periodic_messages": [
+      {
+        "name": "BMU_batteryStatusHV",
+        "signals": {
+          "StateBatteryChargeHV": 25
+        },
+        "time": 0,
+        "period_ms": 3000
+      },
+      {
+        "name": "BMU_batteryStatusHV",
+        "signals": {
+          "StateBatteryChargeHV": 50
+        },
+        "time": 1000,
+        "period_ms": 3000
+      },
+      {
+        "name": "BMU_batteryStatusHV",
+        "signals": {
+          "StateBatteryChargeHV": 75
+        },
+        "time": 2000,
+        "period_ms": 3000
+      }
+    ],
+    "one_time_messages": []
+  }
+  

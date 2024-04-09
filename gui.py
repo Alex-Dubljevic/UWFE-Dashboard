@@ -4,7 +4,7 @@ from threading import Thread
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Scale
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Scale, Toplevel
 import time
 
 
@@ -78,6 +78,9 @@ def format_time(seconds):
 
 
 
+    
+    
+    
 
 
 window = Tk()
@@ -550,8 +553,51 @@ start_temp_button = Button(
 # Position the button
 start_temp_button.place(x=370, y=350)
 
+image_image_4 = PhotoImage(
+    file=relative_to_assets("pepe.png"))
+
+
+def error_overlay():
+    # Calculate the coordinates for the rectangle
+    x1 = (800 - 600) / 2
+    y1 = (480 - 400) / 2
+    x2 = x1 + 600
+    y2 = y1 + 400
+
+    # Create the red rectangle
+    rectangle1 = canvas.create_rectangle(x1, y1, x2, y2-180, fill="red")
+
+    # Calculate the coordinates for the text
+    text_x = (x1 + x2) / 2
+    text_y = (y1 + y2) / 2
+
+    image_4 = canvas.create_image(text_x, text_y-100, image=image_image_4)
+
+    # Add the text "ERROR" to the main canvas
+    text1 = canvas.create_text(
+        text_x, text_y, text="CRITICAL DTC STOP THE CAR", fill="white", font=("Arial", 24)
+    )
+
+    # Update the window to display the overlay
+    window.update()
+
+    # Schedule the destruction of the overlay after 3 seconds
+    window.after(3000, lambda: canvas.delete(rectangle1, text1, image_4))
+
+popup_button = Button(
+    window,
+    text="DTC",
+    font=("Lato Regular", 15),
+    bg="#FF0000",
+    fg="black",
+    command=error_overlay
+)
+popup_button.place(x=370, y=380)
+
 
 
 window.resizable(False, False)
 update_timers()
 window.mainloop()
+
+
