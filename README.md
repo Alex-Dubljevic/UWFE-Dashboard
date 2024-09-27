@@ -6,3 +6,5 @@ The Version of the dashboard which runs on the car has changes to communicate wi
 
 <img width="798" alt="Screenshot 2024-01-28 at 11 35 55 pm" src="https://github.com/Alex-Dubljevic/UWFE-Dashboard/assets/57022810/00946144-1e49-4452-89d3-e0d34e2b5b56">
 
+![20240925_163540](https://github.com/user-attachments/assets/7d472705-b845-40aa-8fdd-05479b56aa67)
+
